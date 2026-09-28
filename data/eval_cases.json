@@ -1,0 +1,50 @@
+[
+  {
+    "id":"hotel_complete",
+    "purpose":"relative rule with explicit timezone",
+    "expected":"CONFIRMED",
+    "note":"가상 정책. 2026-09-25 체크인, 이틀 전 18:00, Asia/Seoul → 2026-09-23 18:00"
+  },
+  {
+    "id":"hotel_missing_timezone",
+    "purpose":"missing decisive timezone",
+    "expected":"REVIEW",
+    "note":"같은 상대 규칙이지만 시간대가 없으면 확정 금지"
+  },
+  {
+    "id":"direct_deadline",
+    "purpose":"explicit directly applicable deadline",
+    "expected":"CONFIRMED_DIRECT",
+    "note":"최종 마감이 직접 명시되면 기준 사건 재계산 없이 사용"
+  },
+  {
+    "id":"return_completion_ambiguous",
+    "purpose":"completion semantics missing",
+    "expected":"REVIEW",
+    "note":"반품 신청/발송/도착 중 무엇이 기한 내 완료인지 불명확"
+  },
+  {
+    "id":"subscription_time_missing",
+    "purpose":"deadline date without cutoff time",
+    "expected":"REVIEW",
+    "note":"다음 결제일 전 해지라고만 있고 시각/완료 기준이 없으면 보류"
+  },
+  {
+    "id":"application_explicit_kst",
+    "purpose":"explicit final deadline and KST",
+    "expected":"CONFIRMED_DIRECT",
+    "note":"신청 완료 시각이 2026-10-02 18:00 KST로 명시된 경우"
+  },
+  {
+    "id":"conflicting_clauses",
+    "purpose":"contradictory policy clauses",
+    "expected":"REVIEW",
+    "note":"서로 다른 무료 취소 마감이 동시에 적용된다고 읽히면 보류"
+  },
+  {
+    "id":"hours_before_with_reference_time",
+    "purpose":"hours-before arithmetic",
+    "expected":"CONFIRMED",
+    "note":"이벤트 시각이 있고 48시간 전 완료 규칙이면 코드가 계산"
+  }
+]
