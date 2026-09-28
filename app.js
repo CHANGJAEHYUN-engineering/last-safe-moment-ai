@@ -33,6 +33,32 @@ function fmtShort(iso){if(!iso)return'';const [,m,d]=iso.split('-').map(Number);
 function escapeHtml(s=''){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
 function fileKind(file){if(!file)return'';if(file.type.startsWith('image/'))return'image';if(file.type==='application/pdf'||/\.pdf$/i.test(file.name))return'pdf';return'file'}
 function getManualOverrides(){return {timezoneLabel:$('#manualTimezone')?.value||'',timezoneId:$('#manualTimezoneId')?.value||'',referenceTime:$('#referenceTime')?.value||''}}
+function formatTimezone(r,empty='시간대 확인됨'){
+  const label=String(r?.timezone||'').trim();
+  const id=String(r?.timezone_id||'').trim();
+  if(label&&id){
+    const normalized=label.replace(/\s*시간대\s*$/,'').trim();
+    if(label===id||normalized===id)return id;
+    return `${label} · ${id}`;
+  }
+  return label||id||empty;
+}
+function hasFinalConsonant(word=''){
+  const chars=[...String(word).trim()];
+  const code=chars.length?chars[chars.length-1].charCodeAt(0):0;
+  return code>=0xAC00&&code<=0xD7A3 ? ((code-0xAC00)%28)!==0 : false;
+}
+function withObjectParticle(word='선택권'){
+  return `${word}${hasFinalConsonant(word)?'을':'를'}`;
+}
+function completionClause(r){
+  const raw=String(r?.completion_requirement||r?.required_action||'필요 행동').trim();
+  if(/되어야\s*함$/.test(raw))return raw.replace(/되어야\s*함$/,'되어야 합니다.');
+  if(/해야\s*함$/.test(raw))return raw.replace(/해야\s*함$/,'해야 합니다.');
+  if(/필요함$/.test(raw))return raw.replace(/필요함$/,'필요합니다.');
+  if(/완료$/.test(raw))return `${raw}되어야 합니다.`;
+  return `${raw}이 완료되어야 합니다.`;
+}
 
 function buildFields(result){
   let timeRule='명시 없음';
@@ -45,7 +71,7 @@ function buildFields(result){
     ['예외',(result.exceptions||[]).join(' · ')||'없음/확인 불가'],
     ['기준 사건',result.reference_event||'확인 불가'],
     ['기준 일시',[fmtDateISO(result.reference_date),result.reference_time].filter(Boolean).join(' ')||'확인 불가'],
-    ['시간대',[result.timezone,result.timezone_id].filter(Boolean).join(' · ')||'확인 불가 ⚠'],
+    ['시간대',formatTimezone(result,'확인 불가 ⚠')],
     ['필요한 행동',result.required_action||'확인 불가'],
     ['완료 요건',result.completion_requirement||'확인 불가'],
     ['시간 규칙',timeRule]
@@ -103,8 +129,10 @@ function showConfirmed(r){
   currentResult=r;
   const l=r.lsm;
   $('#resultTime').textContent=`${fmtDateISO(l.iso)} ${l.clock}`;
-  $('#resultTimezone').textContent=[r.timezone,r.timezone_id].filter(Boolean).join(' · ')||'시간대 확인됨';
-  $('#resultActionCopy').innerHTML=`${escapeHtml(r.choice_right||'선택권')}을 유지하려면 이 시각까지 <strong>${escapeHtml(r.completion_requirement||r.required_action||'필요 행동')}</strong>이 완료되어야 합니다.`;
+  $('#resultTimezone').textContent=formatTimezone(r);
+  const choice=r.choice_right||'선택권';
+  const clause=completionClause(r);
+  $('#resultActionCopy').innerHTML=`${escapeHtml(withObjectParticle(choice))} 유지하려면 이 시각까지 <strong>${escapeHtml(clause.replace(/\.$/,''))}</strong>.`;
   $('#resultReference').textContent=r.reference_date?`${fmtDateISO(r.reference_date)} ${r.reference_time||''} ${r.reference_event||''}`.replace(/\s+/g,' ').trim():(r.reference_event||'직접 명시된 마감');
   $('#resultCompletion').textContent=r.completion_requirement||r.required_action;
   $('#resultConsequence').textContent=r.consequence||'문서에서 별도 결과 미확인';
@@ -179,7 +207,7 @@ function updateCalendar(r){
   $('#calendarDetailTitle').textContent=`${r.choice_right||'선택권'} Last Safe Moment`;
   $('#calendarDetailTime').textContent=`${fmtDateISO(l.iso)} ${l.clock}`;
   $('#calendarAction').textContent=r.completion_requirement||r.required_action;
-  $('#calendarTimezone').textContent=[r.timezone,r.timezone_id].filter(Boolean).join(' · ')||'확인 필요';
+  $('#calendarTimezone').textContent=formatTimezone(r,'확인 필요');
   $('#calendarReference').textContent=r.reference_date?`${fmtDateISO(r.reference_date)} ${r.reference_event||''}`:'문서 직접 명시';
   $('#calendarConsequence').textContent=r.consequence||'문서에서 별도 결과 미확인';
   const canExport=!!r.timezone_id;
