@@ -55,13 +55,26 @@ export function evidenceMatchesSource(source,evidence=[]){
 
 export function validateAndCompute(parsed,overrides={}){
   const out=structuredClone(parsed||{});
+  const timezoneWasManuallyConfirmed=Boolean(overrides.timezoneLabel||overrides.timezoneId);
   if(overrides.timezoneLabel) out.timezone=overrides.timezoneLabel;
   if(overrides.timezoneId) out.timezone_id=overrides.timezoneId;
   if(overrides.referenceTime) out.reference_time=overrides.referenceTime;
 
   const missing=[];
   const conflicts=[...(out.conflicts||[])];
-  const reviewReasons=[...(out.review_reasons||[])];
+  let reviewReasons=[...(out.review_reasons||[])];
+
+  // A REVIEW result returned by the AI can contain a reason such as
+  // "the concrete timezone for hotel local time is unknown". When the user
+  // explicitly supplies/accepts a timezone, that specific reason is resolved
+  // and must not keep the result stuck in REVIEW. Other reasons and document
+  // conflicts remain untouched.
+  if(timezoneWasManuallyConfirmed){
+    reviewReasons=reviewReasons.filter(reason=>
+      !/(시간대|타임존|timezone|time\s*zone|현지시간)/i.test(String(reason||''))
+    );
+  }
+  out.review_reasons=reviewReasons;
 
   const direct=parseDirectDeadline(out.direct_deadline);
   const relativeDeadline=direct?null:computeRelativeDeadline(out);
