@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="놓치기 전 — Last Safe Moment AI 인터랙티브 프로토타입" />
+  <title>놓치기 전 — Last Safe Moment AI</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+  <header class="topbar">
+    <div class="brand-wrap">
+      <div class="brand-mark" aria-hidden="true">LSM</div>
+      <div><div class="brand">놓치기 전</div><div class="brand-sub">Last Safe Moment AI</div></div>
+    </div>
+    <div class="top-actions">
+      <span class="demo-badge">INTERACTIVE PROTOTYPE</span>
+      <button class="text-btn compact" id="openAbout">프로토타입 범위</button>
+    </div>
+  </header>
+
+  <main id="main" class="shell">
+    <section id="startView" class="view active" aria-labelledby="start-title">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">선택권을 잃기 전에</p>
+          <h1 id="start-title">문서 속 날짜가 아니라,<br><span>행동해야 할 마지막 순간</span>을 확인합니다.</h1>
+          <p class="lead">예약·반품·구독·신청 문서의 조건과 예외를 읽어, 무엇을 언제까지 <strong>완료</strong>해야 하는지 원문 근거와 함께 정리합니다.</p>
+          <div class="principle" role="note" aria-label="제품 원칙">
+            <div><strong>DIRECT</strong><span>명확하면 그대로 사용</span></div>
+            <div><strong>INTERPRET</strong><span>해석이 필요하면 AI</span></div>
+            <div><strong>REVIEW</strong><span>확정할 수 없으면 멈춤</span></div>
+          </div>
+          <div class="cta-row">
+            <button id="startConfirmed" class="btn primary">샘플 예약서로 체험</button>
+            <button id="openLab" class="btn secondary">내 문구 직접 분석</button>
+            <button id="startReview" class="btn tertiary">불완전 문서 보기</button>
+          </div>
+          <p class="microcopy">※ 샘플 정책은 제품 흐름 설명을 위한 가상 사례입니다. 실제 특정 업체 정책이 아닙니다.</p>
+        </div>
+        <aside class="hero-card" aria-label="대표 예시">
+          <div class="mini-label">EVENT</div><div class="event-date">9월 25일</div><div class="event-title">호텔 체크인</div>
+          <div class="divider"></div>
+          <div class="mini-label accent">LAST SAFE MOMENT</div><div class="lsm-date">9월 23일 18:00</div><div class="lsm-title">무료 취소 완료</div>
+          <p>숙박일보다 먼저 사라지는 선택권을 따로 봅니다.</p>
+        </aside>
+      </div>
+
+      <div class="mode-explainer">
+        <div><span class="dot demo-dot"></span><strong>Demo Mode</strong><p>API 없이도 항상 재현되는 두 샘플입니다.</p></div>
+        <div><span class="dot local-dot"></span><strong>Local Safe Parse</strong><p>직접 붙여넣은 문구를 브라우저에서 규칙 기반으로 점검합니다.</p></div>
+        <div><span class="dot ai-dot"></span><strong>AI Mode</strong><p>배포 환경에 API 키를 연결하면 구조화 추출을 서버에서 수행합니다.</p></div>
+      </div>
+    </section>
+
+    <section id="labView" class="view" aria-labelledby="lab-title">
+      <div class="section-head">
+        <div><p class="eyebrow">직접 입력</p><h2 id="lab-title">내 문구로 판단 흐름을 확인합니다.</h2></div>
+        <button class="text-btn" data-action="home">처음으로</button>
+      </div>
+      <div class="lab-grid">
+        <article class="input-card">
+          <label for="policyText">정책·안내 문구</label>
+          <textarea id="policyText" rows="9" placeholder="예: 일반 요금은 호텔 현지시간 기준 체크인일 이틀 전 18:00까지 취소 완료 시 무료입니다. 마감 이후 1박 요금이 부과됩니다."></textarea>
+
+          <div class="file-box">
+            <div>
+              <label for="policyFile">또는 문서 파일</label>
+              <p class="microcopy flush">PDF·DOCX·TXT·MD·JPG·PNG·WEBP, 최대 3MB. 파일 분석은 AI Mode에서만 사용합니다.</p>
+            </div>
+            <input id="policyFile" type="file" accept=".pdf,.doc,.docx,.txt,.md,.rtf,.png,.jpg,.jpeg,.webp,application/pdf,image/png,image/jpeg,image/webp,text/plain,text/markdown" />
+            <div id="fileStatus" class="file-status">선택된 파일 없음</div>
+          </div>
+
+          <div class="two-col">
+            <div><label for="referenceDate">기준 사건 날짜</label><input id="referenceDate" type="date" value="2026-09-25" /></div>
+            <div><label for="referenceTime">기준 사건 시각(선택)</label><input id="referenceTime" type="time" value="" /></div>
+          </div>
+          <div class="two-col">
+            <div><label for="referenceEvent">기준 사건</label><input id="referenceEvent" type="text" value="호텔 체크인" /></div>
+            <div><label for="rateType">사용자 조건</label><input id="rateType" type="text" value="일반 요금" /></div>
+          </div>
+          <div class="two-col">
+            <div><label for="manualTimezone">시간대 표시값(선택)</label>
+              <select id="manualTimezone"><option value="">문서에서 확인</option><option value="호텔 현지시간">호텔 현지시간</option><option value="예약자 시간대">예약자 시간대</option><option value="한국 표준시(KST)">한국 표준시(KST)</option></select>
+            </div>
+            <div><label for="manualTimezoneId">캘린더 시간대(선택)</label>
+              <select id="manualTimezoneId"><option value="">아직 모름</option><option value="Asia/Seoul">Asia/Seoul</option><option value="Asia/Tokyo">Asia/Tokyo</option><option value="America/New_York">America/New_York</option><option value="Europe/London">Europe/London</option></select>
+            </div>
+          </div>
+          <label class="consent-box" for="privacyConfirm">
+            <input id="privacyConfirm" type="checkbox" />
+            <span><strong>민감정보 확인</strong><br>AI Mode에 보내기 전에 이름·연락처·예약번호·결제정보 등 분석에 필요 없는 개인정보를 제거했거나, 이 프로토타입의 처리 목적을 확인했습니다.</span>
+          </label>
+          <div class="lab-actions">
+            <button id="localAnalyze" class="btn secondary">로컬 안전검사</button>
+            <button id="aiAnalyze" class="btn primary">AI 구조화 분석</button>
+          </div>
+          <p class="microcopy">로컬 안전검사는 AI가 아니라 규칙 기반 프로토타입입니다. 파일 입력과 실제 AI 의미 추출은 서버 환경변수 <code>OPENAI_API_KEY</code>가 연결된 배포에서만 동작합니다. AI가 반환한 원문 근거도 사용자가 최종 확인해야 합니다.</p>
+        </article>
+        <aside class="input-help">
+          <strong>왜 두 모드인가?</strong>
+          <p>공모전 시연은 외부 API 장애와 무관하게 핵심 안전 동작을 보여야 합니다. Demo/Local 모드는 항상 재현되고, AI Mode는 실제 자연어 의미 추출을 추가합니다.</p>
+          <ul><li>날짜 산술은 모델이 아닌 코드가 수행</li><li>시간대·기준 사건·완료 요건 누락 시 REVIEW</li><li>REVIEW 결과는 캘린더 저장 차단</li></ul>
+        </aside>
+      </div>
+    </section>
+
+    <section id="analysisView" class="view" aria-labelledby="analysis-title">
+      <div class="section-head">
+        <div><p class="eyebrow" id="caseLabel">CASE A · CONFIRMED</p><h2 id="analysis-title">문서의 조건을 행동 기준으로 다시 읽습니다.</h2></div>
+        <button class="text-btn" data-action="home">처음으로</button>
+      </div>
+      <div class="workspace">
+        <article class="document-panel">
+          <div class="panel-top"><span id="documentTitle">시연용 가상 예약 정책</span><span class="mode-chip" id="modeChip">INTERPRET</span></div>
+          <div id="documentText" class="document-text"></div>
+          <button id="evidenceButton" class="btn ghost" type="button">원문 근거 강조</button>
+        </article>
+        <aside class="analysis-panel" aria-live="polite">
+          <div class="panel-top"><span>판단 항목</span><span id="progressCount">0 / 9</span></div>
+          <div id="analysisFields" class="field-list"></div>
+          <div id="analysisStatus" class="analysis-status">문서를 읽는 중입니다…</div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="confirmedView" class="view" aria-labelledby="confirmed-title">
+      <div class="section-head"><div><p class="eyebrow">판단 결과</p><h2 id="confirmed-title">선택권을 지키기 위한 마지막 행동 시점</h2></div><button class="text-btn" data-action="home">처음으로</button></div>
+      <div class="result-layout">
+        <div class="result-card confirmed">
+          <div class="status-line"><span class="status-icon" aria-hidden="true">✓</span> CONFIRMED</div>
+          <div id="resultTime" class="big-time">9월 23일 18:00</div>
+          <div id="resultTimezone" class="timezone">호텔 현지시간</div>
+          <p id="resultActionCopy" class="action-copy">무료 취소라는 선택권을 유지하려면 이 시각까지 예약 상태가 <strong>‘취소 완료’</strong>가 되어야 합니다.</p>
+          <dl class="result-details">
+            <div><dt>기준 사건</dt><dd id="resultReference">9월 25일 호텔 체크인</dd></div>
+            <div><dt>완료 요건</dt><dd id="resultCompletion">취소 요청이 아닌 ‘취소 완료’</dd></div>
+            <div><dt>마감 이후</dt><dd id="resultConsequence">1박 요금 부과</dd></div>
+          </dl>
+          <div class="result-actions"><button id="showEvidence" class="btn secondary">왜 이 시각인가?</button><button id="openCalendar" class="btn primary">캘린더에 추가</button></div>
+          <p class="microcopy">사용자가 확인한 CONFIRMED 결과만 캘린더로 연결합니다.</p>
+        </div>
+        <aside class="timeline-card">
+          <div class="timeline-block lsm-block"><span>LAST SAFE MOMENT</span><strong id="timelineLSM">9/23 18:00</strong><small id="timelineAction">무료 취소 완료</small></div>
+          <div class="timeline-line" aria-hidden="true"><span></span></div>
+          <div class="timeline-block event-block"><span>EVENT</span><strong id="timelineEventDate">9/25</strong><small id="timelineEventName">호텔 체크인</small></div>
+          <p>‘무슨 일이 일어나는 날’과 ‘행동해야 하는 날’을 분리해 봅니다.</p>
+        </aside>
+      </div>
+      <div id="evidenceDrawer" class="evidence-drawer" hidden><strong>판단 근거</strong><div id="evidenceList"></div><p class="microcopy">조건·예외·완료 요건을 함께 확인합니다.</p></div>
+    </section>
+
+    <section id="calendarView" class="view" aria-labelledby="calendar-title">
+      <div class="section-head"><div><p class="eyebrow">행동 연결</p><h2 id="calendar-title">기존 일정은 그대로, 행동해야 할 시점만 연결합니다.</h2></div><button class="text-btn" data-action="home">처음으로</button></div>
+      <div class="calendar-layout">
+        <div class="calendar-card"><div class="calendar-head"><strong id="calendarMonth">9월</strong><span>시연용 캘린더 미리보기</span></div><div class="calendar-days"><div class="day-card active-day"><span id="calendarLSMDay">23</span><strong id="calendarLSMClock">18:00</strong><small id="calendarLSMTitle">무료 취소 Last Safe Moment</small></div><div class="day-card"><span>24</span><small>—</small></div><div class="day-card event-day"><span id="calendarEventDay">25</span><strong id="calendarEventLabel">체크인</strong><small>기존 EVENT 유지</small></div></div></div>
+        <aside class="calendar-detail"><span class="mini-label accent">새 일정</span><h3 id="calendarDetailTitle">무료 취소 Last Safe Moment</h3><div id="calendarDetailTime" class="calendar-time">9월 23일 18:00</div><ul><li><strong>행동:</strong> <span id="calendarAction">예약 취소 완료</span></li><li><strong>시간대:</strong> <span id="calendarTimezone">호텔 현지시간</span></li><li><strong>기준:</strong> <span id="calendarReference">9월 25일 호텔 체크인</span></li><li><strong>마감 이후:</strong> <span id="calendarConsequence">1박 요금 부과</span></li></ul><button id="downloadIcs" class="btn primary">.ics 파일로 저장</button><button id="tryReview" class="btn secondary">불완전 문서도 체험</button><p id="calendarSaveNote" class="microcopy">동일 EVENT가 이미 있다고 가정해 중복 생성하지 않습니다. 실제 .ics 저장에는 IANA 시간대 확인값이 필요합니다.</p></aside>
+      </div>
+    </section>
+
+    <section id="reviewView" class="view" aria-labelledby="review-title">
+      <div class="section-head"><div><p class="eyebrow">판단 결과</p><h2 id="review-title">확정할 수 없는 시각은 만들지 않습니다.</h2></div><button class="text-btn" data-action="home">처음으로</button></div>
+      <div class="result-layout">
+        <div class="result-card review">
+          <div class="status-line"><span class="status-icon" aria-hidden="true">!</span> REVIEW NEEDED</div>
+          <div class="review-title">확정 시각을 계산할 수 없습니다.</div>
+          <p id="reviewReason" class="action-copy">“18:00”의 기준 시간대가 확인되지 않습니다.</p>
+          <dl class="result-details"><div><dt>확인됨</dt><dd id="reviewKnown">체크인 · 9월 25일 · 이틀 전 18:00 · 취소 완료</dd></div><div><dt>누락</dt><dd id="reviewMissing">18:00의 적용 시간대</dd></div><div><dt>다음 행동</dt><dd id="reviewNext">호텔 현지시간인지 예약자 시간대인지 확인</dd></div></dl>
+          <div id="reviewFix" class="review-fix" hidden><label for="reviewTimezoneSelect">시간대 확인값</label><select id="reviewTimezoneSelect"><option value="호텔 현지시간|Asia/Seoul">호텔 현지시간 · Asia/Seoul (시연)</option><option value="한국 표준시(KST)|Asia/Seoul">한국 표준시(KST) · Asia/Seoul</option><option value="예약자 시간대|">예약자 시간대 · 시간대 ID 추가 확인</option></select><button id="applyReviewFix" class="btn secondary">확인값으로 다시 계산</button></div>
+          <div class="result-actions"><button class="btn disabled" aria-disabled="true">캘린더에 추가</button><button id="editReview" class="btn secondary">누락 정보 보완</button><button id="backToConfirmed" class="btn tertiary">완전한 문서 다시 보기</button></div>
+          <p class="microcopy strong">불확실한 시각은 확정 일정으로 저장하지 않습니다.</p>
+        </div>
+        <aside class="review-source"><span class="mini-label">검토 중인 문구</span><blockquote id="reviewSourceText">“일반 요금은 체크인일 이틀 전 18:00까지 취소 완료 시 무료입니다.”</blockquote><div id="reviewChecklist" class="check-list"></div></aside>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="aboutDialog" class="about-dialog">
+    <form method="dialog"><button class="dialog-close" aria-label="닫기">×</button></form>
+    <h3>프로토타입 범위</h3>
+    <p><strong>현재 확실히 동작:</strong> 재현 가능한 샘플 2종, 로컬 규칙 기반 안전검사, 결정론적 시간 계산, REVIEW 저장 차단, IANA 시간대가 확인된 CONFIRMED 결과의 .ics 생성.</p>
+    <p><strong>배포 후 API 연결 시:</strong> OpenAI Responses API의 Structured Outputs로 텍스트·PDF·문서·이미지 입력에서 의미 요소를 구조화합니다. API 키는 서버 환경변수에서만 사용합니다.</p>
+    <p><strong>안전 원칙:</strong> 문서 안의 지시는 데이터로만 취급하며, 누락·충돌·근거 부족은 REVIEW로 보냅니다. AI가 상대시간 계산을 직접 확정하지 않습니다.</p>
+    <p><strong>아직 운영형 고도화:</strong> 정책 최신성 자동 확인, 실제 캘린더 OAuth, 대규모 실제 사용자 검증.</p>
+  </dialog>
+
+  <footer class="footer"><span>놓치기 전 · Last Safe Moment AI</span><span>공모전용 인터랙티브 프로토타입</span></footer>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
